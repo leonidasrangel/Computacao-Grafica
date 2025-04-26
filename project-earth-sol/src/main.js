@@ -1,4 +1,5 @@
 import * as THREE from 'three'; //Importa tudo da biblioteca Three.js para usar recursos, como cena, câmera, geometria, materiais, etc
+import './style.css'
 
 const scene = new THREE.Scene(); //Criando cena 3D 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); //criando a câmera que simula a visão humana
