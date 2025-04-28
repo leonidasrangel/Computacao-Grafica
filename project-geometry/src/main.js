@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-
+import './style.css';
 // Exemplo básico de criação de uma cena
 
 const scene = new THREE.Scene();
