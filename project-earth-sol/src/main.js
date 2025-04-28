@@ -7,7 +7,7 @@ const renderer = new THREE.WebGLRenderer({antialias: true}); //"antialias melhor
 renderer.setSize(window.innerWidth, window.innerHeight); //definindo o canvas(área do desenho) para ocupar a tela do navegador
 document.body.appendChild(renderer.domElement); //onde tudo é desenhado no corpo do HTML
 
-camera.position.set(0, 20, 30);  // vista de cima e afastada (x:0, y:20, z:30)
+camera.position.set(0, 15, 30);  // vista de cima e afastada (x:0, y:20, z:30)
 camera.lookAt(0, 0, 0);          // olhando para o centro onde está o sol
 
 //carregando as texturas
@@ -18,7 +18,7 @@ const starsTexture = textureLoader.load('/stars.jpg');
 scene.background = starsTexture;
 
 // Sol (parado no centro)
-const sunGeometry = new THREE.SphereGeometry(2, 32, 32); //Cria a geometria do Sol (uma esfera com raio 2 e detalhamento 32x32).
+const sunGeometry = new THREE.SphereGeometry(4, 32, 32); //Cria a geometria do Sol (uma esfera com raio 2 e detalhamento 32x32).
 const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture}); //map é a textura do sol
 const sun = new THREE.Mesh(sunGeometry, sunMaterial); //junta a geometria e material
 scene.add(sun); // cria a cena 
@@ -50,6 +50,5 @@ function animate() {
     earth.rotation.y += 0.01;
 
     renderer.render(scene, camera);
-    }
-
-    animate();
+}
+animate();
