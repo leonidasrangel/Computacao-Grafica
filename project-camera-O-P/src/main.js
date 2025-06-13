@@ -6,7 +6,7 @@ import { FlyControls } from 'three/addons/controls/FlyControls.js';
 let scene, renderer, clock;
 let perspectiveCamera, orthographicCamera; // duas câmeras: uma que simula a visão humana (perspectiva) e outra "plana", sem profundidade (ortográfica).
 let activeCamera;
-let flyControls, trackballControls; // Esta variável sempre vai apontar para o controle que está ativo no momento.
+let flyControls, trackballControls;
 let activeControls;
 let currentProjection = 'perspective';
 let currentControls = 'fly';
@@ -52,7 +52,6 @@ function init() {
     const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
     // Cria um loop que se repete 50 vezes para criar 50 cubos.
     for (let i = 0; i < 50; i++) {
-        // Cria um material padrão (que reage à luz) com uma cor aleatória.
         const material = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
         const mesh = new THREE.Mesh(boxGeometry, material);
         mesh.position.set(
@@ -72,12 +71,12 @@ function init() {
 
     flyControls = new FlyControls(activeCamera, renderer.domElement);
     flyControls.movementSpeed = 50;
-    flyControls.rollSpeed = Math.PI / 10;
+    flyControls.rollSpeed = 0.5;
     flyControls.autoForward = false; // true = a câmera se move para frente automaticamente, false = não.
     flyControls.dragToLook = true; // true = clicar para mudar a direção, false = mover o mouse para mudar a direção.
 
     trackballControls = new TrackballControls(activeCamera, renderer.domElement);
-    trackballControls.rotateSpeed = 4.0;
+    trackballControls.rotateSpeed = 3.0;
     trackballControls.target = centralPoint.position;
     
     // Define o controle de voo como o controle ativo no início.
@@ -127,8 +126,6 @@ function switchControls() {
 function switchProjection(type) {
     // Se a projeção desejada já for a atual, não faz nada e sai da função.
     if (currentProjection === type) return;
-    // Guarda uma referência da câmera que estava ativa antes da troca.
-    const oldCamera = activeCamera;
     if (type === 'orthographic') {
         activeCamera = orthographicCamera;
         // Atualiza a variável de estado da projeção.
@@ -137,11 +134,7 @@ function switchProjection(type) {
         activeCamera = perspectiveCamera;
         currentProjection = 'perspective';
     }
-    // Copia a posição da câmera antiga para a nova, garantindo uma transição suave.
-    activeCamera.position.copy(oldCamera.position);
-    // Copia também a rotação (quaternion) para manter a direção da visão.
-    activeCamera.quaternion.copy(oldCamera.quaternion);
-
+    
     // Atualiza a referência da câmera em AMBOS os controles, para que saibam qual câmera manipular.
     activeControls.object = activeCamera;
     updateInfo();
