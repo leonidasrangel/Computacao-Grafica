@@ -1,0 +1,8 @@
+body { 
+            margin: 0; 
+            overflow: hidden; /* Remove barras de rolagem */
+            background-color: #000000; /* Fundo preto para melhor efeito de balada */
+        }
+        canvas { 
+            display: block; 
+        }
