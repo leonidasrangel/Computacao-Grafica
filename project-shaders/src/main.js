@@ -2,27 +2,44 @@ import './style.css';
 import * as THREE from 'three';
 let scene, camera, renderer, cube;
 
-// 1. Definir os Shaders em GLSL
 const vertexShader = `
+    uniform float u_time; //Variável uniforme para o tempo, para controlar a animação da rotação.
+
     void main() {
-        // gl_Position é a posição final do vértice na tela
-        // projectionMatrix * modelViewMatrix * vec4(position, 1.0)
-        // faz as transformações de câmera e modelo no vértice
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        float cx = cos(u_time), sx = sin(u_time); // Cosseno e seno para rotação em X.
+        float cy = cos(u_time), sy = sin(u_time); // Cosseno e seno para rotação em Y.
+        
+        // Matriz 4x4 de rotação combinada (X seguida de Y).
+        mat4 rotationMatrix = mat4(
+            cy,     0.0,    sy,     0.0,
+            sx*sy,  cx,     -sx*cy, 0.0,
+            -cx*sy, sx,     cx*cy,  0.0,
+            0.0,    0.0,    0.0,    1.0
+        );
+
+        vec4 rotatedPosition = rotationMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * modelViewMatrix * rotatedPosition;
     }
 `;
 
 const fragmentShader = `
-    uniform float u_time; // Uma variável "uniform" para passar o tempo do JavaScript para o shader
+    uniform float u_time;
 
     void main() {
-        // Calcular as componentes RGB baseadas no tempo
-        float r = sin(u_time * 0.5) * 0.5 + 0.5;
-        float g = sin(u_time * 0.7) * 0.5 + 0.5;
-        float b = sin(u_time * 0.9) * 0.5 + 0.5;
+        // Calcula um fator de piscagem (blink_factor) baseado no tempo.
+        // mod(u_time, 1.0) retorna o resto da divisão de u_time por 1.0, criando um ciclo entre 0.0 e 1.0.
+        // step(0.5, ...) retorna 0.0 se o valor for menor que 0.5, e 1.0 se for maior ou igual, criando um efeito de "liga/desliga".
+        float blink_factor = step(0.5, mod(u_time, 1.0));
 
-        // gl_FragColor é a cor final do pixel
-        gl_FragColor = vec4(r, g, b, 1.0); // RGBA (1.0 para opacidade total)
+        vec3 red = vec3(1.0, 0.0, 0.0);
+        vec3 pink = vec3(1.0, 0.1, 0.8);
+
+        // Interpola linearmente entre as cores vermelha e rosa com base no blink_factor.
+        // Quando blink_factor é 0.0, usa a cor vermelha; quando é 1.0, usa a cor rosa.
+        vec3 final_color = mix(red, pink, blink_factor);
+
+        // Define a cor final do fragmento (pixel)
+        gl_FragColor = vec4(final_color, 1.0);
     }
 `;
 
@@ -63,8 +80,8 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    //cube.rotation.x += 0.01;
+    //cube.rotation.y += 0.01;
 
     // Atualizar a uniform 'u_time' a cada quadro
     if (cube.material && cube.material.uniforms && cube.material.uniforms.u_time) {
